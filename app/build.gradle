@@ -1,15 +1,19 @@
 apply plugin: 'com.android.application'
 
+Properties prop = new Properties()
+prop.load(new FileInputStream(file("../signing.properties")))
+
+
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
 
     signingConfigs {
-        releaseConfig {
-            keyAlias 'test1234'
-            keyPassword 'test1234'
-            storeFile file('demo_flavors.jks')
-            storePassword 'test1234'
+        release {
+            storeFile file(prop['KEYSTORE_FILEPATH'])
+            storePassword prop['STORE_PASSWORD']
+            keyAlias prop['KEY_ALIAS']
+            keyPassword prop['KEY_PASSWORD']
         }
     }
 
@@ -22,11 +26,30 @@ android {
     }
     buildTypes {
         release {
-            signingConfig signingConfigs.releaseConfig
-            minifyEnabled false
+            shrinkResources true
+            zipAlignEnabled true
+            minifyEnabled true
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug{
+            shrinkResources false
+            zipAlignEnabled false
+            minifyEnabled false
+        }
     }
+
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            def outputFile = output.outputFile
+            if (outputFile != null && outputFile.name.endsWith('.apk')) {
+                // 输出apk名称为vipabc_v1.0_2015-01-15_debug_wandoujia.apk,并移动到buildType文件夹
+                def fileName = "vipabc_v${defaultConfig.versionName}_${variant.buildType.name}_${releaseTime()}_${variant.productFlavors[0].name}.apk"
+                output.outputFile = new File(outputFile.parent+"/${variant.buildType.name}", fileName)
+            }
+        }
+    }
+
 
     // delete unaligned files
     android.applicationVariants.all { variant ->
@@ -55,6 +78,12 @@ android {
         }
     }
 }
+
+
+def releaseTime() {
+    return new Date().format("yyyy-MM-dd", TimeZone.getTimeZone("UTC"))
+}
+
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
