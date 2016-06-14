@@ -1,0 +1,46 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
+
+    signingConfigs {
+        releaseConfig {
+            keyAlias 'test1234'
+            keyPassword 'test1234'
+            storeFile file('demo_flavors.jks')
+            storePassword 'test1234'
+        }
+    }
+
+    defaultConfig {
+        applicationId "com.lolstudio.demo_gradle_flavors"
+        minSdkVersion 15
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.releaseConfig
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    productFlavors {
+        //名称要一致，不再需要单独设置sourceset，功能很强大，如tutor的渠道只需要umeng的sdk，而vipabc，则在tutor下dependencies，pro
+        tutor {
+            applicationId = "com.lolstudio.tutorabc"
+        }
+        vipabc {
+            applicationId = "com.lolstudio.vipabc"
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:23.3.0'
+}
