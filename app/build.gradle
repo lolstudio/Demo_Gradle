@@ -28,6 +28,23 @@ android {
         }
     }
 
+    // delete unaligned files
+    android.applicationVariants.all { variant ->
+        variant.assemble.doLast {
+            variant.outputs.each { output ->
+                println "aligned " + output.outputFile
+                println "unaligned " + output.packageApplication.outputFile
+
+                File unaligned = output.packageApplication.outputFile;
+                File aligned = output.outputFile
+                if (!unaligned.getName().equalsIgnoreCase(aligned.getName())) {
+                    println "deleting " + unaligned.getName()
+                    unaligned.delete()
+                }
+            }
+        }
+    }
+
     productFlavors {
         //名称要一致，不再需要单独设置sourceset，功能很强大，如tutor的渠道只需要umeng的sdk，而vipabc，则在tutor下dependencies，pro
         tutor {
