@@ -17,4 +17,9 @@
         android:layout_centerVertical="true"
         android:drawableTop="@mipmap/ic_launcher"
         android:text="@string/name"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/other_ic_launcher"/>
 </RelativeLayout>

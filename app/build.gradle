@@ -1,7 +1,45 @@
+
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies{
+        classpath 'com.mcxiaoke.gradle:packer:1.0.+'
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+
+
+
 apply plugin: 'com.android.application'
+apply plugin: 'packer'
+
 
 Properties prop = new Properties()
 prop.load(new FileInputStream(file("../signing.properties")))
+
+
+
+packer {
+    // 指定渠道打包输出目录
+    archiveOutput = file(new File(project.rootProject.buildDir.path, "apks"))
+    // 指定渠道打包输出文件名格式
+    archiveNameFormat = ''
+    // 指定渠道打包需要修改的AndroidManifest文件项
+    manifestMatcher = ['UMENG_CHANNEL']
+    // 指定是否使用build版本号自增
+    buildNumberAuto = false
+    // 指定使用版本号自增的buildType，默认是全部
+    buildNumberTypeMatcher = ['release', 'beta']
+
+}
+
 
 
 android {
@@ -68,14 +106,35 @@ android {
         }
     }
 
+    sourceSets {
+        baidu {
+            res.srcDirs = ['tutor']
+        }
+    }
+
     productFlavors {
-        //名称要一致，不再需要单独设置sourceset，功能很强大，如tutor的渠道只需要umeng的sdk，而vipabc，则在tutor下dependencies，pro
+        //正确操作是在main中包含相应的文件夹，不引入会给后期造成渠道打包麻烦，参见：http://www.sunmoonblog.com/blog/2015/07/03/new-project-gradle/
+        //此处flavors的名称应该与res名称要一致，不需要设置sourceset，可以更多自定义，如tutor的渠道只需要umeng的sdk，而vipabc不需要，则在tutor下dependencies再到main和2个渠道代码中添加共同一个类写逻辑，具体参考gradle书签
+        //如果没有配置对应的渠道文件夹，则会选择哪个文件夹呢。。。
+        //貌似设置sourceSets无效
+        //如果main中的drawable目录没有文件夹，而其他渠道文件夹有，不会报错打渠道包时会自动去找对应的res，但mipmap不行会直接引入报错
+
         tutor {
             applicationId = "com.lolstudio.tutorabc"
         }
+
+
         vipabc {
             applicationId = "com.lolstudio.vipabc"
         }
+
+        /*baidu {applicationId = "com.lolstudio.baidu"}
+
+
+        anzhuo {applicationId = "com.lolstudio.anzhuo"}
+        anzhi {applicationId = "com.lolstudio.anzhi"}
+        '91sjzs' {applicationId = "com.lolstudio.91sjzs"}
+        GooglePlay {applicationId = "com.lolstudio.googleplay"}*/
     }
 }
 
