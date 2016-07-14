@@ -108,7 +108,7 @@ android {
 
     sourceSets {
         baidu {
-            res.srcDirs = ['tutor']
+            root = "src/vipabc"
         }
     }
 
@@ -119,13 +119,18 @@ android {
         //貌似设置sourceSets无效
         //如果main中的drawable目录没有文件夹，而其他渠道文件夹有，不会报错打渠道包时会自动去找对应的res，但mipmap不行会直接引入报错
 
-        tutor {
+        //2016-07-13 如果main中没有引用的图片资源文件，在vipabc的flavor中有则不会报错，但是如果添加其他的flavor则会报错
+        /*tutor {
             applicationId = "com.lolstudio.tutorabc"
-        }
+        }*/
 
 
         vipabc {
             applicationId = "com.lolstudio.vipabc"
+        }
+
+        baidu {
+            applicationId = "com.lolstudio.baidu"
         }
 
         /*baidu {applicationId = "com.lolstudio.baidu"}
